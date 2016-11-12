@@ -49,7 +49,11 @@ function($scope, posts){
       {
         title: $scope.title,
         link: $scope.link,
-        upvotes:0
+        upvotes:0,
+        comments:[
+          {author:'Joe', body:'Cool post!', upvotes:0},
+          {author: 'Bob', body: 'Great idea but everything is wrong!', upvotes: 0}
+        ]
       });
     $scope.title = '';
     $scope.link = '';
@@ -67,6 +71,6 @@ app.controller('PostsCtrl',[
   'posts',
   function($scope, $stateParams, posts)
   {
-    
+
   }
 ])
