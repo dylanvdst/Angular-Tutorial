@@ -8,6 +8,11 @@ var User = mongoose.model('User');
 var jwt = require('express-jwt');
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Express' });
+});
+
 router.param('post', function(req, res, next, id)
 {
   var query = Post.findById(id);
@@ -61,7 +66,7 @@ router.get('/posts/:post', function(req, res, next){
   });
 });
 
-router.put('/posts/:post/upvote', auth, function(req, res, next){
+router.put('/posts/:post/upvote', auth, function(req, res, next) {
   req.post.upvote(function(err, post){
     if(err){return next(err);}
 
@@ -69,7 +74,7 @@ router.put('/posts/:post/upvote', auth, function(req, res, next){
   });
 });
 
-router.post('/posts/:post/comments', auth, function(req, res, next){
+router.post('/posts/:post/comments', auth, function(req, res, next) {
   var comment = new Comment(req.body);
   comment.post = req.post;
   comment.author = req.payload.username;
@@ -95,19 +100,20 @@ router.put('/posts/:post/comments/:comment/upvote', auth, function(req, res, nex
 });
 
 router.post('/register', function(req, res, next){
-  if(!req.body.username || !req.body.password)
-  {
+  if(!req.body.username || !req.body.password){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
   var user = new User();
+
   user.username = req.body.username;
-  user.setPassword(req.body.password);
 
-  user.save(function(err){
-    if(err){return next(err);}
+  user.setPassword(req.body.password)
 
-    return res.json({token: user.generateJWT()});
+  user.save(function (err){
+    if(err){ return next(err); }
+
+    return res.json({token: user.generateJWT()})
   });
 });
 
@@ -116,20 +122,15 @@ router.post('/login', function(req, res, next){
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  password.authenticate('local', function(err, user, info){
-    if(err){return next(err);}
+  passport.authenticate('local', function(err, user, info){
+    if(err){ return next(err); }
 
     if(user){
       return res.json({token: user.generateJWT()});
-    }else{
+    } else {
       return res.status(401).json(info);
     }
   })(req, res, next);
-});
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
 });
 
 module.exports = router;
