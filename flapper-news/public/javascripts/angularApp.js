@@ -42,8 +42,8 @@ app.config([
       url: '/register',
       templateUrl: '/register.html',
       controller: 'AuthCtrl',
-      onEnter:['$state', 'auth', function($state, auth){
-        if(auth.isLoggedin()){
+      onEnter: ['$state', 'auth', function($state, auth){
+        if(auth.isLoggedIn()){
           $state.go('home');
         }
       }]
@@ -52,7 +52,7 @@ app.config([
     $urlRouterProvider.otherwise('home');
   }]);
 
-app.factory('posts', ['$http', function($http){
+app.factory('posts', ['$http', 'auth', function($http, auth){
   var o = {
     posts: []
   };
@@ -64,13 +64,17 @@ app.factory('posts', ['$http', function($http){
   };
 
   o.create = function(post){
-    return $http.post('/posts', post).success(function(data){
+    return $http.post('/posts', post, {
+      headers: {Authorization: 'Bearer' + auth.getToken()}
+    }).success(function(data){
       o.posts.push(data);
     });
   };
 
   o.upvote = function(post) {
-  return $http.put('/posts/' + post._id + '/upvote').success(function(data){
+  return $http.put('/posts/' + post._id + '/upvote', null, {
+    headers: {Authorization: 'Bearer'+auth.getToken()}
+  }).success(function(data){
       post.upvotes += 1;
     });
   };
@@ -82,12 +86,15 @@ app.factory('posts', ['$http', function($http){
   };
 
   o.addComment = function (id, comment) {
-    return $http.post('/posts/' + id + '/comments', comment);
+    return $http.post('/posts/' + id + '/comments', comment, {
+      headers: {Authorization: 'Bearer'+auth.getToken()}
+    });
   };
 
   o.upvoteComment = function(post, comment){
-    return $http.put('/posts/' + post._id + 'comments' + comment._id + '/upvote')
-    .success(function(data){
+    return $http.put('/posts/' + post._id + 'comments' + comment._id + '/upvote', null, {
+      headers: {Authorization: 'Bearer'+auth.getToken()}
+    }).success(function(data){
       comment.upvotes += 1;
     });
   };
@@ -95,11 +102,11 @@ app.factory('posts', ['$http', function($http){
   return o;
 }]);
 
-app.factory('auth', ['$http', '$window', fucntion($http, $window){
+app.factory('auth', ['$http', '$window', function($http, $window){
   var auth = {};
 
   auth.saveToken = function(token){
-    $window.localStorage['flapper-news-token'] = token,
+    $window.localStorage['flapper-news-token'] = token;
   };
 
   auth.getToken = function(){
@@ -118,7 +125,7 @@ app.factory('auth', ['$http', '$window', fucntion($http, $window){
     }
   };
 
-  auth.currentUser = fucntion(){
+  auth.currentUser = function(){
     if(auth.isLoggedIn()){
       var token = auth.getToken();
       var payload = JSON.parse($window.atob(token.split('.')[1]));
@@ -144,15 +151,16 @@ app.factory('auth', ['$http', '$window', fucntion($http, $window){
   };
 
   return auth;
-}])
+}]);
 
 
 app.controller('MainCtrl', [
 '$scope',
 'posts',
-function($scope, posts){
+'auth',
+function($scope, posts, auth){
   $scope.test = 'Hello world!';
-
+  $scope.isLoggedIn = auth.isLoggedIn;
   $scope.posts = posts.posts;
 
   $scope.addPost = function()
@@ -176,10 +184,11 @@ app.controller('PostsCtrl',[
   '$scope',
   'posts',
   'post',
-  function($scope, posts, post)
+  'auth',
+  function($scope, posts, post, auth)
   {
     $scope.post = post;
-
+    $scope.isLoggedIn = auth.isLoggedIn;
      /* Only works when adding a comment on an added post.*/
      $scope.addComment = function () {
            if ($scope.body === '') {
@@ -203,10 +212,10 @@ app.controller('PostsCtrl',[
     '$scope',
     '$state',
     'auth',
-    fucntion($scope, $state, auth){
+    function($scope, $state, auth){
       $scope.user = {};
 
-      $scope.register = function($scope.user){
+      $scope.register = function(){
         auth.register($scope.user).error(function(error){
           $scope.error = error;
         }).then(function(){
