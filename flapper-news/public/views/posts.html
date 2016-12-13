@@ -1,0 +1,29 @@
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="page-header">
+      <h1>
+        <a ng-show="post.link" href="{{post.link}}">{{post.title}}</a>
+        <span ng-hide="post.link">{{post.title}}</span>
+      </h1>
+    </div>
+  </div>
+</div>
+
+<div class="row" ng-repeat="comment in post.comments | orderBy:'-upvotes'">        
+  <div class="col-md-6 col-md-offset-3 post-card">
+
+    <div class="col-md-2">
+      <span class="glyphicon glyphicon-thumbs-up" ng-click="incrementUpvotes(comment)"></span>
+      <span class="glyphicon glyphicon-thumbs-down" ng-click="decrementUpvotes(comment)"></span>
+      {{comment.upvotes}}
+    </div>
+
+    <div class="col-md-10">
+      <span ng-show="post.author">by {{comment.author}} - </span>
+      <span>{{comment.body}}</span>
+      <span class="glyphicon glyphicon-trash" ng-show="isCommentOwner(comment)" ng-click="deleteComment(comment)"></span>
+    </div>
+
+  </div>
+
+</div>

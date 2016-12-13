@@ -6,3 +6,12 @@ body {
 a {
   color: #00B7FF;
 }
+
+.post-card {
+  color: #ECEFF1;
+  background-color: #263238;
+	border-radius: 5px;
+	box-shadow: 2px 2px 5px #9E9E9E;
+	margin-bottom: 10px;
+	padding: 10px;
+}
