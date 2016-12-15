@@ -15,7 +15,7 @@ require('./config/passport');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
-mongoose.connect('mongodb://localhost/news');
+mongoose.connect('mongodb://dylan:brian@ds131878.mlab.com:31878/flappernews');
 
 var app = express();
 

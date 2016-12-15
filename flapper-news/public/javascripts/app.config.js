@@ -18,7 +18,7 @@ function config($stateProvider, $urlRouterProvider) {
 		.state('posts', {
 			url: '/posts/{id}',
 			templateUrl: 'views/posts.html',
-			controller: 'PostsCtrl',
+			controller: 'PostCtrl',
 			resolve: {
 				post: ['$stateParams', 'posts', function($stateParams, posts) {
 					return posts.get($stateParams.id);
