@@ -1,7 +1,7 @@
 # Angular-Tutorial
-> Source: https://thinkster.io/mean-stack-tutorial
+Tutorial Source: https://thinkster.io/mean-stack-tutorial
 
-> Heroku: https://salty-coast-40273.herokuapp.com/#/home
+Heroku: https://salty-coast-40273.herokuapp.com/#/home
 
 ## How this works:
 
